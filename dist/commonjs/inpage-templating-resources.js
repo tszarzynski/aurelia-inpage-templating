@@ -7,9 +7,7 @@ exports.InpageTemplatingResources = undefined;
 
 var _dec, _class;
 
-var _aureliaDependencyInjection = require('aurelia-dependency-injection');
-
-var _aureliaTemplating = require('aurelia-templating');
+var _aureliaFramework = require('aurelia-framework');
 
 var _aureliaLoaderDefault = require('aurelia-loader-default');
 
@@ -23,7 +21,7 @@ _aureliaLoaderDefault.TextTemplateLoader.prototype.loadTemplate = function (load
         var inpageTemplates = template.content.querySelectorAll('[as-template]');
         if (inpageTemplates.length) {
             (function () {
-                var templatingResources = _aureliaDependencyInjection.Container.instance.get(InpageTemplatingResources);
+                var templatingResources = _aureliaFramework.Container.instance.get(InpageTemplatingResources);
                 inpageTemplates.forEach(function (element) {
                     return templatingResources.parseTemplate(element);
                 });
@@ -32,7 +30,7 @@ _aureliaLoaderDefault.TextTemplateLoader.prototype.loadTemplate = function (load
     });
 };
 
-var InpageTemplatingResources = exports.InpageTemplatingResources = (_dec = (0, _aureliaDependencyInjection.inject)(_aureliaTemplating.ViewResources, _aureliaDependencyInjection.Container), _dec(_class = function () {
+var InpageTemplatingResources = exports.InpageTemplatingResources = (_dec = (0, _aureliaFramework.inject)(_aureliaFramework.ViewResources, _aureliaFramework.Container), _dec(_class = function () {
     function InpageTemplatingResources(viewResources, container) {
         _classCallCheck(this, InpageTemplatingResources);
 
@@ -77,9 +75,10 @@ var InpageTemplatingResources = exports.InpageTemplatingResources = (_dec = (0, 
             this._walkTheDOM(newElement, function (node) {
                 if (node.attributes) {
                     Array.from(node.attributes).forEach(function (item) {
-                        var bindings = item.name.match(/(textcontent)\.(bind|one-way|two-way|one-time)/);
+                        var bindings = item.name.match(/(textcontent|src|srcset|fallback)\.(bind|one-way|two-way|one-time)/);
 
                         if (bindings) {
+                            node.removeAttribute(bindings[1]);
                             node.textContent = '';
                             item.value = item.value.replace(/\&\s*progressiveRepeater:[\s\S]+:[\s\S]+/, '');
                         }

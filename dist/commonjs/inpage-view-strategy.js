@@ -9,24 +9,24 @@ var _class;
 
 exports.inpageView = inpageView;
 
-var _aureliaDependencyInjection = require('aurelia-dependency-injection');
-
-var _aureliaTemplating = require('aurelia-templating');
+var _aureliaFramework = require('aurelia-framework');
 
 var _inpageTemplatingResources = require('./inpage-templating-resources');
 
 var _aureliaLoader = require('aurelia-loader');
 
+var _aureliaPal = require('aurelia-pal');
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function inpageView(templateName, dependencies, dependencyBaseUrl) {
-    var templatingResources = _aureliaDependencyInjection.Container.instance.get(_inpageTemplatingResources.InpageTemplatingResources);
+    var templatingResources = _aureliaFramework.Container.instance.get(_inpageTemplatingResources.InpageTemplatingResources);
     var markup = templatingResources.getTemplate(templateName);
 
-    return (0, _aureliaTemplating.useViewStrategy)(markup ? new _aureliaTemplating.InlineViewStrategy(markup, dependencies, dependencyBaseUrl) : new InpageViewStrategy(templateName, templatingResources));
+    return (0, _aureliaFramework.useViewStrategy)(markup ? new _aureliaFramework.InlineViewStrategy(markup, dependencies, dependencyBaseUrl) : new InpageViewStrategy(templateName, templatingResources));
 }
 
-var InpageViewStrategy = exports.InpageViewStrategy = (0, _aureliaTemplating.viewStrategy)(_class = function () {
+var InpageViewStrategy = exports.InpageViewStrategy = (0, _aureliaFramework.viewStrategy)(_class = function () {
     function InpageViewStrategy(templateName, templatingResources) {
         _classCallCheck(this, InpageViewStrategy);
 
@@ -35,7 +35,6 @@ var InpageViewStrategy = exports.InpageViewStrategy = (0, _aureliaTemplating.vie
     }
 
     InpageViewStrategy.prototype.loadViewFactory = function loadViewFactory(viewEngine, compileInstruction, loadContext) {
-        var _this = this;
 
         var entry = this.entry;
 
@@ -43,14 +42,14 @@ var InpageViewStrategy = exports.InpageViewStrategy = (0, _aureliaTemplating.vie
             return Promise.resolve(entry.factory);
         }
 
-        var template = this.parseTemplate('<template>Missing inpage template!</template>');
+        var template = _aureliaPal.DOM.createTemplateFromMarkup('<template>Missing inpage template: ' + this.templateName + '</template>');
 
         entry = new _aureliaLoader.TemplateRegistryEntry(this.moduleId);
         entry.factory = viewEngine.viewCompiler.compile(template, viewEngine.appResources, compileInstruction);
 
         var unobserve = this.templatingResources.observe(this.templateName, function (markup) {
 
-            var vf = viewEngine.viewCompiler.compile(_this.parseTemplate(markup), viewEngine.appResources, compileInstruction);
+            var vf = viewEngine.viewCompiler.compile(_aureliaPal.DOM.createTemplateFromMarkup(markup), viewEngine.appResources, compileInstruction);
             entry.factory.template = vf.template;
             entry.factory.instructions = vf.instructions;
 
@@ -58,19 +57,6 @@ var InpageViewStrategy = exports.InpageViewStrategy = (0, _aureliaTemplating.vie
         });
 
         return Promise.resolve(entry.factory);
-    };
-
-    InpageViewStrategy.prototype.parseTemplate = function parseTemplate(html) {
-
-        var parser = document.createElement('div');
-        parser.innerHTML = html;
-
-        var temp = parser.firstElementChild;
-        if (!temp || temp.nodeName !== 'TEMPLATE') {
-            throw new Error('Template markup must be wrapped in a <template> element e.g. <template> <!-- markup here --> </template>');
-        }
-
-        return temp;
     };
 
     return InpageViewStrategy;

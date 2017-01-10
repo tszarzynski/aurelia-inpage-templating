@@ -1,9 +1,9 @@
 var _class;
 
-import { inject, Container } from 'aurelia-dependency-injection';
-import { InlineViewStrategy, useViewStrategy, viewStrategy } from 'aurelia-templating';
+import { InlineViewStrategy, Container, useViewStrategy, viewStrategy } from 'aurelia-framework';
 import { InpageTemplatingResources } from './inpage-templating-resources';
 import { TemplateRegistryEntry } from 'aurelia-loader';
+import { DOM } from 'aurelia-pal';
 
 export function inpageView(templateName, dependencies, dependencyBaseUrl) {
     let templatingResources = Container.instance.get(InpageTemplatingResources);
@@ -27,14 +27,14 @@ export let InpageViewStrategy = viewStrategy(_class = class InpageViewStrategy {
             return Promise.resolve(entry.factory);
         }
 
-        let template = this.parseTemplate('<template>Missing inpage template!</template>');
+        let template = DOM.createTemplateFromMarkup(`<template>Missing inpage template: ${ this.templateName }</template>`);
 
         entry = new TemplateRegistryEntry(this.moduleId);
         entry.factory = viewEngine.viewCompiler.compile(template, viewEngine.appResources, compileInstruction);
 
         let unobserve = this.templatingResources.observe(this.templateName, markup => {
 
-            let vf = viewEngine.viewCompiler.compile(this.parseTemplate(markup), viewEngine.appResources, compileInstruction);
+            let vf = viewEngine.viewCompiler.compile(DOM.createTemplateFromMarkup(markup), viewEngine.appResources, compileInstruction);
             entry.factory.template = vf.template;
             entry.factory.instructions = vf.instructions;
 
@@ -42,18 +42,5 @@ export let InpageViewStrategy = viewStrategy(_class = class InpageViewStrategy {
         });
 
         return Promise.resolve(entry.factory);
-    }
-
-    parseTemplate(html) {
-
-        let parser = document.createElement('div');
-        parser.innerHTML = html;
-
-        let temp = parser.firstElementChild;
-        if (!temp || temp.nodeName !== 'TEMPLATE') {
-            throw new Error('Template markup must be wrapped in a <template> element e.g. <template> <!-- markup here --> </template>');
-        }
-
-        return temp;
     }
 }) || _class;

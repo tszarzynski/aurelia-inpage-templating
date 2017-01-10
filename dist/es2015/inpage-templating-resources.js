@@ -1,7 +1,6 @@
 var _dec, _class;
 
-import { inject, Container } from 'aurelia-dependency-injection';
-import { ViewResources } from 'aurelia-templating';
+import { inject, ViewResources, Container } from 'aurelia-framework';
 import { TextTemplateLoader } from 'aurelia-loader-default';
 import { DOM } from 'aurelia-pal';
 
@@ -54,9 +53,10 @@ export let InpageTemplatingResources = (_dec = inject(ViewResources, Container),
             this._walkTheDOM(newElement, node => {
                 if (node.attributes) {
                     Array.from(node.attributes).forEach(item => {
-                        let bindings = item.name.match(/(textcontent)\.(bind|one-way|two-way|one-time)/);
+                        let bindings = item.name.match(/(textcontent|src|srcset|fallback)\.(bind|one-way|two-way|one-time)/);
 
                         if (bindings) {
+                            node.removeAttribute(bindings[1]);
                             node.textContent = '';
                             item.value = item.value.replace(/\&\s*progressiveRepeater:[\s\S]+:[\s\S]+/, '');
                         }

@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['aurelia-dependency-injection', 'aurelia-templating', './inpage-templating-resources', 'aurelia-loader'], function (_export, _context) {
+System.register(['aurelia-framework', './inpage-templating-resources', 'aurelia-loader', 'aurelia-pal'], function (_export, _context) {
     "use strict";
 
-    var inject, Container, InlineViewStrategy, useViewStrategy, viewStrategy, InpageTemplatingResources, TemplateRegistryEntry, _class, InpageViewStrategy;
+    var InlineViewStrategy, Container, useViewStrategy, viewStrategy, InpageTemplatingResources, TemplateRegistryEntry, DOM, _class, InpageViewStrategy;
 
     function _classCallCheck(instance, Constructor) {
         if (!(instance instanceof Constructor)) {
@@ -21,17 +21,17 @@ System.register(['aurelia-dependency-injection', 'aurelia-templating', './inpage
     _export('inpageView', inpageView);
 
     return {
-        setters: [function (_aureliaDependencyInjection) {
-            inject = _aureliaDependencyInjection.inject;
-            Container = _aureliaDependencyInjection.Container;
-        }, function (_aureliaTemplating) {
-            InlineViewStrategy = _aureliaTemplating.InlineViewStrategy;
-            useViewStrategy = _aureliaTemplating.useViewStrategy;
-            viewStrategy = _aureliaTemplating.viewStrategy;
+        setters: [function (_aureliaFramework) {
+            InlineViewStrategy = _aureliaFramework.InlineViewStrategy;
+            Container = _aureliaFramework.Container;
+            useViewStrategy = _aureliaFramework.useViewStrategy;
+            viewStrategy = _aureliaFramework.viewStrategy;
         }, function (_inpageTemplatingResources) {
             InpageTemplatingResources = _inpageTemplatingResources.InpageTemplatingResources;
         }, function (_aureliaLoader) {
             TemplateRegistryEntry = _aureliaLoader.TemplateRegistryEntry;
+        }, function (_aureliaPal) {
+            DOM = _aureliaPal.DOM;
         }],
         execute: function () {
             _export('InpageViewStrategy', InpageViewStrategy = viewStrategy(_class = function () {
@@ -43,7 +43,6 @@ System.register(['aurelia-dependency-injection', 'aurelia-templating', './inpage
                 }
 
                 InpageViewStrategy.prototype.loadViewFactory = function loadViewFactory(viewEngine, compileInstruction, loadContext) {
-                    var _this = this;
 
                     var entry = this.entry;
 
@@ -51,14 +50,14 @@ System.register(['aurelia-dependency-injection', 'aurelia-templating', './inpage
                         return Promise.resolve(entry.factory);
                     }
 
-                    var template = this.parseTemplate('<template>Missing inpage template!</template>');
+                    var template = DOM.createTemplateFromMarkup('<template>Missing inpage template: ' + this.templateName + '</template>');
 
                     entry = new TemplateRegistryEntry(this.moduleId);
                     entry.factory = viewEngine.viewCompiler.compile(template, viewEngine.appResources, compileInstruction);
 
                     var unobserve = this.templatingResources.observe(this.templateName, function (markup) {
 
-                        var vf = viewEngine.viewCompiler.compile(_this.parseTemplate(markup), viewEngine.appResources, compileInstruction);
+                        var vf = viewEngine.viewCompiler.compile(DOM.createTemplateFromMarkup(markup), viewEngine.appResources, compileInstruction);
                         entry.factory.template = vf.template;
                         entry.factory.instructions = vf.instructions;
 
@@ -66,19 +65,6 @@ System.register(['aurelia-dependency-injection', 'aurelia-templating', './inpage
                     });
 
                     return Promise.resolve(entry.factory);
-                };
-
-                InpageViewStrategy.prototype.parseTemplate = function parseTemplate(html) {
-
-                    var parser = document.createElement('div');
-                    parser.innerHTML = html;
-
-                    var temp = parser.firstElementChild;
-                    if (!temp || temp.nodeName !== 'TEMPLATE') {
-                        throw new Error('Template markup must be wrapped in a <template> element e.g. <template> <!-- markup here --> </template>');
-                    }
-
-                    return temp;
                 };
 
                 return InpageViewStrategy;

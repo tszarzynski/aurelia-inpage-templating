@@ -1,9 +1,9 @@
 'use strict';
 
-System.register(['aurelia-dependency-injection', 'aurelia-templating', 'aurelia-loader-default', 'aurelia-pal'], function (_export, _context) {
+System.register(['aurelia-framework', 'aurelia-loader-default', 'aurelia-pal'], function (_export, _context) {
     "use strict";
 
-    var inject, Container, ViewResources, TextTemplateLoader, DOM, _dec, _class, InpageTemplatingResources;
+    var inject, ViewResources, Container, TextTemplateLoader, DOM, _dec, _class, InpageTemplatingResources;
 
     function _classCallCheck(instance, Constructor) {
         if (!(instance instanceof Constructor)) {
@@ -12,11 +12,10 @@ System.register(['aurelia-dependency-injection', 'aurelia-templating', 'aurelia-
     }
 
     return {
-        setters: [function (_aureliaDependencyInjection) {
-            inject = _aureliaDependencyInjection.inject;
-            Container = _aureliaDependencyInjection.Container;
-        }, function (_aureliaTemplating) {
-            ViewResources = _aureliaTemplating.ViewResources;
+        setters: [function (_aureliaFramework) {
+            inject = _aureliaFramework.inject;
+            ViewResources = _aureliaFramework.ViewResources;
+            Container = _aureliaFramework.Container;
         }, function (_aureliaLoaderDefault) {
             TextTemplateLoader = _aureliaLoaderDefault.TextTemplateLoader;
         }, function (_aureliaPal) {
@@ -84,9 +83,10 @@ System.register(['aurelia-dependency-injection', 'aurelia-templating', 'aurelia-
                         this._walkTheDOM(newElement, function (node) {
                             if (node.attributes) {
                                 Array.from(node.attributes).forEach(function (item) {
-                                    var bindings = item.name.match(/(textcontent)\.(bind|one-way|two-way|one-time)/);
+                                    var bindings = item.name.match(/(textcontent|src|srcset|fallback)\.(bind|one-way|two-way|one-time)/);
 
                                     if (bindings) {
+                                        node.removeAttribute(bindings[1]);
                                         node.textContent = '';
                                         item.value = item.value.replace(/\&\s*progressiveRepeater:[\s\S]+:[\s\S]+/, '');
                                     }

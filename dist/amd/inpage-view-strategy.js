@@ -1,4 +1,4 @@
-define(['exports', 'aurelia-dependency-injection', 'aurelia-templating', './inpage-templating-resources', 'aurelia-loader'], function (exports, _aureliaDependencyInjection, _aureliaTemplating, _inpageTemplatingResources, _aureliaLoader) {
+define(['exports', 'aurelia-framework', './inpage-templating-resources', 'aurelia-loader', 'aurelia-pal'], function (exports, _aureliaFramework, _inpageTemplatingResources, _aureliaLoader, _aureliaPal) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -16,13 +16,13 @@ define(['exports', 'aurelia-dependency-injection', 'aurelia-templating', './inpa
     var _class;
 
     function inpageView(templateName, dependencies, dependencyBaseUrl) {
-        var templatingResources = _aureliaDependencyInjection.Container.instance.get(_inpageTemplatingResources.InpageTemplatingResources);
+        var templatingResources = _aureliaFramework.Container.instance.get(_inpageTemplatingResources.InpageTemplatingResources);
         var markup = templatingResources.getTemplate(templateName);
 
-        return (0, _aureliaTemplating.useViewStrategy)(markup ? new _aureliaTemplating.InlineViewStrategy(markup, dependencies, dependencyBaseUrl) : new InpageViewStrategy(templateName, templatingResources));
+        return (0, _aureliaFramework.useViewStrategy)(markup ? new _aureliaFramework.InlineViewStrategy(markup, dependencies, dependencyBaseUrl) : new InpageViewStrategy(templateName, templatingResources));
     }
 
-    var InpageViewStrategy = exports.InpageViewStrategy = (0, _aureliaTemplating.viewStrategy)(_class = function () {
+    var InpageViewStrategy = exports.InpageViewStrategy = (0, _aureliaFramework.viewStrategy)(_class = function () {
         function InpageViewStrategy(templateName, templatingResources) {
             _classCallCheck(this, InpageViewStrategy);
 
@@ -31,7 +31,6 @@ define(['exports', 'aurelia-dependency-injection', 'aurelia-templating', './inpa
         }
 
         InpageViewStrategy.prototype.loadViewFactory = function loadViewFactory(viewEngine, compileInstruction, loadContext) {
-            var _this = this;
 
             var entry = this.entry;
 
@@ -39,14 +38,14 @@ define(['exports', 'aurelia-dependency-injection', 'aurelia-templating', './inpa
                 return Promise.resolve(entry.factory);
             }
 
-            var template = this.parseTemplate('<template>Missing inpage template!</template>');
+            var template = _aureliaPal.DOM.createTemplateFromMarkup('<template>Missing inpage template: ' + this.templateName + '</template>');
 
             entry = new _aureliaLoader.TemplateRegistryEntry(this.moduleId);
             entry.factory = viewEngine.viewCompiler.compile(template, viewEngine.appResources, compileInstruction);
 
             var unobserve = this.templatingResources.observe(this.templateName, function (markup) {
 
-                var vf = viewEngine.viewCompiler.compile(_this.parseTemplate(markup), viewEngine.appResources, compileInstruction);
+                var vf = viewEngine.viewCompiler.compile(_aureliaPal.DOM.createTemplateFromMarkup(markup), viewEngine.appResources, compileInstruction);
                 entry.factory.template = vf.template;
                 entry.factory.instructions = vf.instructions;
 
@@ -54,19 +53,6 @@ define(['exports', 'aurelia-dependency-injection', 'aurelia-templating', './inpa
             });
 
             return Promise.resolve(entry.factory);
-        };
-
-        InpageViewStrategy.prototype.parseTemplate = function parseTemplate(html) {
-
-            var parser = document.createElement('div');
-            parser.innerHTML = html;
-
-            var temp = parser.firstElementChild;
-            if (!temp || temp.nodeName !== 'TEMPLATE') {
-                throw new Error('Template markup must be wrapped in a <template> element e.g. <template> <!-- markup here --> </template>');
-            }
-
-            return temp;
         };
 
         return InpageViewStrategy;

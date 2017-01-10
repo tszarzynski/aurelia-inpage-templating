@@ -1,6 +1,6 @@
 'use strict';
 
-System.register(['aurelia-dependency-injection', 'aurelia-templating', './inpage-templating-resources'], function (_export, _context) {
+System.register(['aurelia-framework', './inpage-templating-resources'], function (_export, _context) {
     "use strict";
 
     var inject, customAttribute, InpageTemplatingResources, _dec, _dec2, _class, AsTemplateCustomAttribute;
@@ -12,10 +12,9 @@ System.register(['aurelia-dependency-injection', 'aurelia-templating', './inpage
     }
 
     return {
-        setters: [function (_aureliaDependencyInjection) {
-            inject = _aureliaDependencyInjection.inject;
-        }, function (_aureliaTemplating) {
-            customAttribute = _aureliaTemplating.customAttribute;
+        setters: [function (_aureliaFramework) {
+            inject = _aureliaFramework.inject;
+            customAttribute = _aureliaFramework.customAttribute;
         }, function (_inpageTemplatingResources) {
             InpageTemplatingResources = _inpageTemplatingResources.InpageTemplatingResources;
         }],
