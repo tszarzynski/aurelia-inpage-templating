@@ -1,6 +1,6 @@
 {
   "name": "aurelia-inpage-templating",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A plugin for Aurelia to extract templates markup from server side rendered pages",
   "keywords": [
     "aurelia",
