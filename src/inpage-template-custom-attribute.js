@@ -1,8 +1,7 @@
 /*
-    Inpage Template
+    Custom attribute used to mark a piece of markup as template
  */
-import {inject} from 'aurelia-dependency-injection';
-import {customAttribute} from 'aurelia-templating';
+import {inject, customAttribute} from 'aurelia-framework';
 import {InpageTemplatingResources} from './inpage-templating-resources';
 
 @customAttribute('as-template')
